@@ -11,20 +11,20 @@ model User {
   id           String    @id @default(cuid())
   email        String    @unique
   passwordHash String
-  role         Role      @default(SALARIE)
+  role         String    @default("SALARIE")  // <- était enum Role
   createdAt    DateTime  @default(now())
   employee     Employee?
 }
 
 model Employee {
   id         String     @id @default(cuid())
-  userId     String?    @unique               // IMPORTANT : unique pour la relation 1–1
+  userId     String?    @unique
   user       User?      @relation(fields: [userId], references: [id])
   firstName  String
   lastName   String
   phone      String?
   address    String?
-  status     Status     @default(ACTIF)
+  status     String     @default("ACTIF")     // <- était enum Status
   avatarUrl  String?
   createdAt  DateTime   @default(now())
   timesheets Timesheet[]
@@ -37,26 +37,10 @@ model Timesheet {
   declaredStart     DateTime
   declaredEnd       DateTime
   declaredBreakMins Int      @default(0)
-  status            TStatus  @default(EN_ATTENTE)
+  status            String   @default("EN_ATTENTE") // <- était enum TStatus
   validatedByUserId String?
   validatedAt       DateTime?
   createdAt         DateTime @default(now())
 }
 
-enum Role {
-  ADMIN
-  MANAGER
-  SALARIE
-}
-
-enum Status {
-  ACTIF
-  INACTIF
-  EN_ATTENTE
-}
-
-enum TStatus {
-  EN_ATTENTE
-  VALIDE
-  REFUSE
-}
+// NOTE: plus d'enums avec SQLite. On garde des String ("ADMIN","ACTIF","EN_ATTENTE", etc.)
