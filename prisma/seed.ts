@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { hash } from "bcryptjs";
+import bcrypt from "bcryptjs"; // ⬅️ import par défaut (ESM)
+
 const prisma = new PrismaClient();
 
 async function main() {
   const adminEmail = "admin@votreentreprise.fr";
   const adminPass = "Admin123!";
-  const passwordHash = await hash(adminPass, 10);
+
+  const passwordHash = await bcrypt.hash(adminPass, 10); // ⬅️ bcrypt.hash
 
   await prisma.user.upsert({
     where: { email: adminEmail },
@@ -36,5 +38,11 @@ async function main() {
   console.log("Seed done:", adminEmail, adminPass);
 }
 
-main().catch((e) => { console.error(e); process.exit(1); })
-  .finally(async () => { await prisma.$disconnect(); });
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
